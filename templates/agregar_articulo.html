@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Producto{% endblock %}
+
+{% block content %}
+<h2>Agregar Producto</h2>
+<form method="POST" action="/articulos/agregar">
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Producto</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" required>
+    </div>
+    <div class="mb-3">
+        <label for="categoria" class="form-label">Categoria</label>
+        <input type="text" class="form-control" id="categoria" name="categoria" required>
+    </div>
+    <div class="mb-3">
+        <label for="codigo" class="form-label">Código</label>
+        <input type="text" class="form-control" id="codigo" name="codigo" required>
+    </div>
+    <div class="mb-3">
+        <label for="fecha_ingreso" class="form-label">Fecha de Ingreso</label>
+        <input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Agregar</button>
+    <a href="/articulos" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

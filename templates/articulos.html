@@ -2,16 +2,16 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mt-4">Listado de Estudiantes</h2>
+    <h2 class="mt-4">Listado de Productos</h2>
     
     <!-- Cuadro de Búsqueda -->
     <div class="input-group mb-3">
-        <input type="text" id="search" class="form-control" placeholder="Buscar por nombre o cédula">
+        <input type="text" id="search" class="form-control" placeholder="Buscar por nombre o código">
     </div>
 
-    <!-- Botón para Agregar Estudiante -->
+    <!-- Botón para Agregar Productos -->
     <div class="mb-3">
-        <a href="/alumnos/agregar" class="btn btn-success">Agregar Estudiante</a>
+        <a href="/articulos/agregar" class="btn btn-success">Agregar Producto</a>
     </div>
     
     <!-- Botones de Exportación -->
@@ -23,29 +23,29 @@
         <button class="btn btn-secondary" onclick="exportData('json')">Exportar a JSON</button>
     </div>
 
-    <!-- Tabla de Estudiantes -->
+    <!-- Tabla de productos -->
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>id</th>
                 <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Cédula</th>
-                <th>Fecha de Nacimiento</th>
+                <th>Categoria</th>
+                <th>Codigo</th>
+                <th>Fecha de Ingreso</th>
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody id="studentTable">
-            {% for alumno in alumnos %}
+        <tbody id="productTable">
+            {% for articulo in articulos %}
             <tr>
-                <td>{{ alumno[0] }}</td>
-                <td>{{ alumno[1] }}</td>
-                <td>{{ alumno[2] }}</td>
-                <td>{{ alumno[3] }}</td>
-                <td>{{ alumno[4] }}</td>
+                <td>{{ articulo[0] }}</td>
+                <td>{{ articulo[1] }}</td>
+                <td>{{ articulo[2] }}</td>
+                <td>{{ articulo[3] }}</td>
+                <td>{{ articulo[4] }}</td>
                 <td>
-                    <a href="/alumnos/editar/{{ alumno[0] }}" class="btn btn-primary">Editar</a>
-                    <a href="/alumnos/eliminar/{{ alumno[0] }}" class="btn btn-danger">Eliminar</a>
+                    <a href="/articulos/editar/{{ articulo[0] }}" class="btn btn-primary">Editar</a>
+                    <a href="/articulos/eliminar/{{ articulo[0] }}" class="btn btn-danger">Eliminar</a>
                 </td>
             </tr>
             {% endfor %}
@@ -54,15 +54,15 @@
 </div>
 
 <script>
-    // Función para filtrar los estudiantes
+    // Función para filtrar productos
     document.getElementById('search').addEventListener('keyup', function() {
         let value = this.value.toLowerCase();
-        let rows = document.querySelectorAll('#studentTable tr');
+        let rows = document.querySelectorAll('#productTable tr');
         
         rows.forEach(row => {
             let name = row.cells[1].textContent.toLowerCase();
-            let cedula = row.cells[3].textContent.toLowerCase();
-            row.style.display = (name.includes(value) || cedula.includes(value)) ? '' : 'none';
+            let codigo = row.cells[3].textContent.toLowerCase();
+            row.style.display = (name.includes(value) || codigo.includes(value)) ? '' : 'none';
         });
     });
 

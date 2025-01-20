@@ -5,11 +5,11 @@ services:
       context: .
       dockerfile: Dockerfile
     image:
-      enriquemacias21/python-flask
+      app-python-flask
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=postgresql://postgres:admin123@db:5432/sistema_matricula
+      - DATABASE_URL=postgresql://postgres:admin123@db:5433/sistema_matricula
     volumes:
       - .:/app
     depends_on:
@@ -22,7 +22,7 @@ services:
       POSTGRES_PASSWORD: admin123
       POSTGRES_DB: sistema_matricula
     ports:
-      - "5432:5432"
+      - "5433:5433"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

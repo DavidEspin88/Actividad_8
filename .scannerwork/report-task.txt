@@ -1,6 +1,6 @@
-projectKey=app
+projectKey=app2
 serverUrl=http://localhost:9000
 serverVersion=10.6.0.92116
-dashboardUrl=http://localhost:9000/dashboard?id=app
-ceTaskId=dd7e92ba-5159-4777-a51f-8e1e859d2349
-ceTaskUrl=http://localhost:9000/api/ce/task?id=dd7e92ba-5159-4777-a51f-8e1e859d2349
+dashboardUrl=http://localhost:9000/dashboard?id=app2
+ceTaskId=7bace852-1bb6-4d3f-813c-96227a211d1f
+ceTaskUrl=http://localhost:9000/api/ce/task?id=7bace852-1bb6-4d3f-813c-96227a211d1f

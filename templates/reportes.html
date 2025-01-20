@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="mt-4">Reportes de Estudiantes</h1>
+    <h1 class="mt-4">Reporte de Productos</h1>
     
     <form id="searchForm">
         <div class="form-group">
-            <label for="searchInput">Buscar Estudiante:</label>
-            <input type="text" class="form-control" id="searchInput" placeholder="Nombre o cédula">
+            <label for="searchInput">Buscar Producto:</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="Nombre o Código">
         </div>
         <button type="submit" class="btn btn-primary">Buscar</button>
     </form>
@@ -17,9 +17,9 @@
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Cédula</th>
-                <th>Fecha de Nacimiento</th>
+                <th>Categoria</th>
+                <th>Código</th>
+                <th>Fecha de Ingreso</th>
             </tr>
         </thead>
         <tbody id="resultsBody">
@@ -39,20 +39,20 @@ document.getElementById("searchForm").onsubmit = async function(e) {
     e.preventDefault();
     const searchTerm = document.getElementById("searchInput").value;
 
-    // Llamar a la API para buscar estudiantes
-    const response = await fetch(`/buscar_estudiantes?term=${searchTerm}`);
-    const estudiantes = await response.json();
+    // Llamar a la API para buscar productos
+    const response = await fetch(`/buscar_productos?term=${searchTerm}`);
+    const productos = await response.json();
 
     // Actualizar la tabla con los resultados
     const resultsBody = document.getElementById("resultsBody");
     resultsBody.innerHTML = "";
-    estudiantes.forEach(estudiante => {
+    productos.forEach(producto => {
         resultsBody.innerHTML += `
             <tr>
-                <td>${estudiante.nombre}</td>
-                <td>${estudiante.apellido}</td>
-                <td>${estudiante.cedula}</td>
-                <td>${new Date(estudiante.fecha_nacimiento).toLocaleDateString()}</td>
+                <td>${producto.nombre}</td>
+                <td>${producto.categoria}</td>
+                <td>${producto.codigo}</td>
+                <td>${new Date(producto.fecha_ingreso).toLocaleDateString()}</td>
             </tr>
         `;
     });

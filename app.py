@@ -46,129 +46,129 @@ def dashboard():
     else:
         return redirect(url_for('login'))
 
-# Ruta para listar alumnos
-@app.route('/alumnos')
-def listar_alumnos():
+# Ruta para listar productos
+@app.route('/articulos')
+def listar_articulos():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('SELECT * FROM estudiantes')
-    alumnos = cur.fetchall()
+    cur.execute('SELECT * FROM productos')
+    articulos = cur.fetchall()
     cur.close()
     conn.close()
-    return render_template('alumnos.html', alumnos=alumnos)
+    return render_template('articulos.html', articulos=articulos)
 
-# Ruta para agregar alumno
-@app.route('/alumnos/agregar', methods=['GET', 'POST'])
-def agregar_alumno():
+# Ruta para agregar productos
+@app.route('/articulos/agregar', methods=['GET', 'POST'])
+def agregar_articulo():
     if request.method == 'POST':
         nombre = request.form['nombre']
-        apellido = request.form['apellido']
-        cedula = request.form['cedula']
-        fecha_nacimiento = request.form['fecha_nacimiento']
+        categoria = request.form['categoria']
+        codigo = request.form['codigo']
+        fecha_ingreso = request.form['fecha_ingreso']
         
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("INSERT INTO estudiantes (nombre, apellido, cedula, fecha_nacimiento) VALUES (%s, %s, %s, %s)",
-                    (nombre, apellido, cedula, fecha_nacimiento))
+        cur.execute("INSERT INTO productos (nombre, categoria, codigo, fecha_ingreso) VALUES (%s, %s, %s, %s)",
+                    (nombre, categoria, codigo, fecha_ingreso))
         conn.commit()
         cur.close()
         conn.close()
-        return redirect(url_for('listar_alumnos'))
+        return redirect(url_for('listar_articulos'))
 
-    return render_template('agregar_alumno.html')
+    return render_template('agregar_articulo.html')
 
-# Ruta para editar alumno
-@app.route('/alumnos/editar/<int:id>', methods=['GET', 'POST'])
-def editar_alumno(id):
+# Ruta para editar productos
+@app.route('/articulos/editar/<int:id>', methods=['GET', 'POST'])
+def editar_articulo(id):
     conn = get_db_connection()
     cur = conn.cursor()
 
     if request.method == 'POST':
         nombre = request.form['nombre']
-        apellido = request.form['apellido']
-        cedula = request.form['cedula']
-        fecha_nacimiento = request.form['fecha_nacimiento']
-        cur.execute("UPDATE estudiantes SET nombre = %s, apellido = %s, cedula = %s, fecha_nacimiento = %s WHERE id = %s",
-                    (nombre, apellido, cedula, fecha_nacimiento, id))
+        categoria = request.form['categoria']
+        codigo = request.form['codigo']
+        fecha_ingreso = request.form['fecha_ingreso']
+        cur.execute("UPDATE productos SET nombre = %s, categoria = %s, codigo = %s, fecha_ingreso = %s WHERE id = %s",
+                    (nombre, categoria, codigo, fecha_ingreso, id))
         conn.commit()
-        return redirect(url_for('listar_alumnos'))
+        return redirect(url_for('listar_articulos'))
     
-    cur.execute('SELECT * FROM estudiantes WHERE id = %s', (id,))
-    alumno = cur.fetchone()
+    cur.execute('SELECT * FROM productos WHERE id = %s', (id,))
+    articulo = cur.fetchone()
     cur.close()
     conn.close()
 
-    return render_template('editar_alumno.html', alumno=alumno)
+    return render_template('editar_articulo.html', articulo=articulo)
 
-# Ruta para eliminar alumno
-@app.route('/alumnos/eliminar/<int:id>')
-def eliminar_alumno(id):
+# Ruta para eliminar producto
+@app.route('/articulos/eliminar/<int:id>')
+def eliminar_articulo(id):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute('DELETE FROM estudiantes WHERE id = %s', (id,))
+    cur.execute('DELETE FROM productos WHERE id = %s', (id,))
     conn.commit()
     cur.close()
     conn.close()
-    return redirect(url_for('listar_alumnos'))
+    return redirect(url_for('listar_articulos'))
 
 # Rutas de Exportación
 @app.route('/exportar/<formato>')
 def exportar_datos(formato):
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM estudiantes")
-    estudiantes = cur.fetchall()
+    cur.execute("SELECT * FROM productos")
+    productos = cur.fetchall()
     column_names = [desc[0] for desc in cur.description]
 
     if formato == 'pdf':
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=12)
-        for estudiante in estudiantes:
-            pdf.cell(200, 10, txt=f"{estudiante}", ln=True)
-        pdf_file = 'estudiantes.pdf'
+        for producto in productos:
+            pdf.cell(200, 10, txt=f"{producto}", ln=True)
+        pdf_file = 'productos.pdf'
         pdf.output(pdf_file)
         return send_file(pdf_file, as_attachment=True)
 
     elif formato == 'xlsx':
-        df = pd.DataFrame(estudiantes, columns=column_names)
-        excel_file = 'estudiantes.xlsx'
+        df = pd.DataFrame(productos, columns=column_names)
+        excel_file = 'productos.xlsx'
         df.to_excel(excel_file, index=False)
         return send_file(excel_file, as_attachment=True)
 
     elif formato == 'csv':
-        df = pd.DataFrame(estudiantes, columns=column_names)
-        csv_file = 'estudiantes.csv'
+        df = pd.DataFrame(productos, columns=column_names)
+        csv_file = 'productos.csv'
         df.to_csv(csv_file, index=False)
         return send_file(csv_file, as_attachment=True)
 
     elif formato == 'xml':
-        root = ET.Element("Estudiantes")
-        for estudiante in estudiantes:
-            estudiante_element = ET.SubElement(root, "Estudiante")
+        root = ET.Element("Productos")
+        for producto in productos:
+            producto_element = ET.SubElement(root, "Producto")
             for i, col in enumerate(column_names):
-                ET.SubElement(estudiante_element, col).text = str(estudiante[i])
+                ET.SubElement(producto_element, col).text = str(producto[i])
         tree = ET.ElementTree(root)
-        xml_file = 'estudiantes.xml'
+        xml_file = 'productos.xml'
         tree.write(xml_file)
         return send_file(xml_file, as_attachment=True)
 
     elif formato == 'json':
         data = []
-        for est in estudiantes:
-            estudiante_dict = {
+        for est in productos:
+            producto_dict = {
                 "ID": est[0],
                 "Nombre": est[1],
-                "Apellido": est[2],
-                "Cedula": est[3],
-                "Fecha de Nacimiento": est[4].strftime('%Y-%m-%d')  # Convertir la fecha a cadena
+                "Categoria": est[2],
+                "Código": est[3],
+                "Fecha de Ingreso": est[4].strftime('%Y-%m-%d')  # Convertir la fecha a cadena
             }
-            data.append(estudiante_dict)
+            data.append(producto_dict)
 
         json_output = json.dumps(data, indent=4)
-        return send_file(io.BytesIO(json_output.encode()), as_attachment=True, download_name='estudiantes.json', mimetype='application/json')
+        return send_file(io.BytesIO(json_output.encode()), as_attachment=True, download_name='productos.json', mimetype='application/json')
 
-    return redirect(url_for('alumnos'))
+    return redirect(url_for('productos'))
 
 # Ruta para generar reportes
 @app.route('/reportes')
@@ -185,24 +185,24 @@ def logout():
     flash('Has cerrado sesión correctamente.', 'success')
     return redirect(url_for('login'))
 
-@app.route('/buscar_estudiantes')
-def buscar_estudiantes():
+@app.route('/buscar_productos')
+def buscar_productos():
     term = request.args.get('term')
     # Aquí debes tener tu conexión a la base de datos
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM estudiantes WHERE nombre ILIKE %s OR cedula ILIKE %s", (f'%{term}%', f'%{term}%'))
-    estudiantes = cursor.fetchall()
+    cursor.execute("SELECT * FROM productos WHERE nombre ILIKE %s OR codigo ILIKE %s", (f'%{term}%', f'%{term}%'))
+    productos = cursor.fetchall()
 
     # Convertir a un formato JSON adecuado
     result = []
-    for estudiante in estudiantes:
+    for producto in productos:
         result.append({
-            'id': estudiante[0],
-            'nombre': estudiante[1],
-            'apellido': estudiante[2],
-            'cedula': estudiante[3],
-            'fecha_nacimiento': estudiante[4].isoformat()  # Convertir a formato ISO para JSON
+            'id': producto[0],
+            'nombre': producto[1],
+            'categoria': producto[2],
+            'codigo': producto[3],
+            'fecha_ingreso': producto[4].isoformat()  # Convertir a formato ISO para JSON
         })
 
     return jsonify(result)
@@ -212,18 +212,18 @@ def exportar_csv():
     term = request.args.get('term')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM estudiantes WHERE nombre ILIKE %s OR cedula ILIKE %s", (f'%{term}%', f'%{term}%'))
-    estudiantes = cursor.fetchall()
+    cursor.execute("SELECT * FROM productos WHERE nombre ILIKE %s OR codigo ILIKE %s", (f'%{term}%', f'%{term}%'))
+    productos = cursor.fetchall()
 
     # Crear CSV
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(['ID', 'Nombre', 'Apellido', 'Cédula', 'Fecha de Nacimiento'])
-    for estudiante in estudiantes:
-        writer.writerow(estudiante)
+    writer.writerow(['ID', 'Nombre', 'Categoria', 'Código', 'Fecha de ingreso'])
+    for producto in productos:
+        writer.writerow(producto)
 
     output.seek(0)
-    return send_file(io.BytesIO(output.getvalue().encode()), as_attachment=True, download_name='estudiantes.csv', mimetype='text/csv')
+    return send_file(io.BytesIO(output.getvalue().encode()), as_attachment=True, download_name='productos.csv', mimetype='text/csv')
 
 
 @app.route('/export/xlsx')
@@ -231,24 +231,24 @@ def exportar_xlsx():
     term = request.args.get('term')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM estudiantes WHERE nombre ILIKE %s OR cedula ILIKE %s", (f'%{term}%', f'%{term}%'))
-    estudiantes = cursor.fetchall()
+    cursor.execute("SELECT * FROM productos WHERE nombre ILIKE %s OR codigo ILIKE %s", (f'%{term}%', f'%{term}%'))
+    productos = cursor.fetchall()
 
     workbook = Workbook()
     sheet = workbook.active
-    sheet.title = "Estudiantes"
+    sheet.title = "Productos"
 
     # Escribir encabezados
-    sheet.append(['ID', 'Nombre', 'Apellido', 'Cédula', 'Fecha de Nacimiento'])
+    sheet.append(['ID', 'Nombre', 'Categoria', 'Código', 'Fecha de Ingreso'])
 
-    for estudiante in estudiantes:
-        sheet.append(estudiante)
+    for producto in productos:
+        sheet.append(producto)
 
     output = io.BytesIO()
     workbook.save(output)
     output.seek(0)
 
-    return send_file(output, as_attachment=True, download_name='estudiantes.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return send_file(output, as_attachment=True, download_name='productos.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 
 @app.route('/export/pdf')
@@ -256,17 +256,17 @@ def exportar_pdf():
     term = request.args.get('term')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM estudiantes WHERE nombre ILIKE %s OR cedula ILIKE %s", (f'%{term}%', f'%{term}%'))
-    estudiantes = cursor.fetchall()
+    cursor.execute("SELECT * FROM productos WHERE nombre ILIKE %s OR codigo ILIKE %s", (f'%{term}%', f'%{term}%'))
+    productos = cursor.fetchall()
 
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt="Reporte de Estudiantes", ln=True, align='C')
+    pdf.cell(200, 10, txt="Reporte de Productos", ln=True, align='C')
 
-    for estudiante in estudiantes:
-           pdf.cell(200, 10, txt=f"{estudiante[1]} {estudiante[2]} - Cédula: {estudiante[3]} - Fecha Nacimiento: {estudiante[4]}", ln=True)
-    pdf_file = 'estudiantes.pdf'
+    for producto in productos:
+           pdf.cell(200, 10, txt=f"{producto[1]} {producto[2]} - Código: {producto[3]} - Fecha Ingreso: {producto[4]}", ln=True)
+    pdf_file = 'productos.pdf'
     pdf.output(pdf_file)
     return send_file(pdf_file, as_attachment=True)
 
@@ -276,13 +276,13 @@ def export_json():
     term = request.args.get('term')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM estudiantes WHERE nombre ILIKE %s OR cedula ILIKE %s", (f'%{term}%', f'%{term}%'))
-    estudiantes = cursor.fetchall()
+    cursor.execute("SELECT * FROM productos WHERE nombre ILIKE %s OR codigo ILIKE %s", (f'%{term}%', f'%{term}%'))
+    productos = cursor.fetchall()
 
-    result = [{'id': e[0], 'nombre': e[1], 'apellido': e[2], 'cedula': e[3], 'fecha_nacimiento': e[4].isoformat()} for e in estudiantes]
+    result = [{'id': e[0], 'nombre': e[1], 'categoria': e[2], 'codigo': e[3], 'fecha_ingreso': e[4].isoformat()} for e in productos]
 
     response = json.dumps(result)
-    return Response(response, mimetype='application/json', headers={"Content-Disposition": "attachment;filename=estudiantes.json"})
+    return Response(response, mimetype='application/json', headers={"Content-Disposition": "attachment;filename=productos.json"})
 
 
 @app.route('/export/xml')
@@ -290,24 +290,24 @@ def exportar_xml():
     term = request.args.get('term')
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM estudiantes WHERE nombre ILIKE %s OR cedula ILIKE %s", (f'%{term}%', f'%{term}%'))
-    estudiantes = cursor.fetchall()
+    cursor.execute("SELECT * FROM productos WHERE nombre ILIKE %s OR codigo ILIKE %s", (f'%{term}%', f'%{term}%'))
+    productos = cursor.fetchall()
 
-    root = ET.Element("estudiantes")
-    for estudiante in estudiantes:
-        est_elem = ET.SubElement(root, "estudiante")
-        ET.SubElement(est_elem, "id").text = str(estudiante[0])
-        ET.SubElement(est_elem, "nombre").text = estudiante[1]
-        ET.SubElement(est_elem, "apellido").text = estudiante[2]
-        ET.SubElement(est_elem, "cedula").text = estudiante[3]
-        ET.SubElement(est_elem, "fecha_nacimiento").text = estudiante[4].isoformat()
+    root = ET.Element("productos")
+    for producto in productos:
+        est_elem = ET.SubElement(root, "producto")
+        ET.SubElement(est_elem, "id").text = str(producto[0])
+        ET.SubElement(est_elem, "nombre").text = producto[1]
+        ET.SubElement(est_elem, "categoria").text = producto[2]
+        ET.SubElement(est_elem, "codigo").text = producto[3]
+        ET.SubElement(est_elem, "fecha_ingreso").text = producto[4].isoformat()
 
     output = io.BytesIO()
     tree = ET.ElementTree(root)
     tree.write(output, encoding='utf-8', xml_declaration=True)
     output.seek(0)
 
-    return send_file(output, as_attachment=True, download_name='estudiantes.xml', mimetype='application/xml')
+    return send_file(output, as_attachment=True, download_name='productos.xml', mimetype='application/xml')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
